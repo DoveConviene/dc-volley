@@ -32,6 +32,7 @@ import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
+import com.android.volley.Response.ProgressListener;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -65,6 +66,9 @@ public class BasicNetwork implements Network {
 
     protected final ByteArrayPool mPool;
 
+    private long mRequestStart;
+    private ProgressListener mProgressListener;
+
     /**
      * @param httpStack HTTP stack to be used
      */
@@ -85,7 +89,10 @@ public class BasicNetwork implements Network {
 
     @Override
     public NetworkResponse performRequest(Request<?> request) throws VolleyError {
-        long requestStart = SystemClock.elapsedRealtime();
+        mRequestStart = SystemClock.elapsedRealtime();
+        if (request instanceof ProgressListener) {
+            mProgressListener = (ProgressListener) request;
+        }
         while (true) {
             HttpResponse httpResponse = null;
             byte[] responseContents = null;
@@ -106,7 +113,7 @@ public class BasicNetwork implements Network {
                     if (entry == null) {
                         return new NetworkResponse(HttpStatus.SC_NOT_MODIFIED, null,
                                 responseHeaders, true,
-                                SystemClock.elapsedRealtime() - requestStart);
+                                SystemClock.elapsedRealtime() - mRequestStart);
                     }
 
                     // A HTTP 304 response does not have all header fields. We
@@ -116,7 +123,7 @@ public class BasicNetwork implements Network {
                     entry.responseHeaders.putAll(responseHeaders);
                     return new NetworkResponse(HttpStatus.SC_NOT_MODIFIED, entry.data,
                             entry.responseHeaders, true,
-                            SystemClock.elapsedRealtime() - requestStart);
+                            SystemClock.elapsedRealtime() - mRequestStart);
                 }
 
                 // Handle moved resources
@@ -135,14 +142,14 @@ public class BasicNetwork implements Network {
                 }
 
                 // if the request is slow, log it.
-                long requestLifetime = SystemClock.elapsedRealtime() - requestStart;
+                long requestLifetime = SystemClock.elapsedRealtime() - mRequestStart;
                 logSlowRequests(requestLifetime, request, responseContents, statusLine);
 
                 if (statusCode < 200 || statusCode > 299) {
                     throw new IOException();
                 }
                 return new NetworkResponse(statusCode, responseContents, responseHeaders, false,
-                        SystemClock.elapsedRealtime() - requestStart);
+                        SystemClock.elapsedRealtime() - mRequestStart);
             } catch (SocketTimeoutException e) {
                 attemptRetryOnException("socket", request, new TimeoutError());
             } catch (ConnectTimeoutException e) {
@@ -165,7 +172,7 @@ public class BasicNetwork implements Network {
                 }
                 if (responseContents != null) {
                     networkResponse = new NetworkResponse(statusCode, responseContents,
-                            responseHeaders, false, SystemClock.elapsedRealtime() - requestStart);
+                            responseHeaders, false, SystemClock.elapsedRealtime() - mRequestStart);
                     if (statusCode == HttpStatus.SC_UNAUTHORIZED ||
                             statusCode == HttpStatus.SC_FORBIDDEN) {
                         attemptRetryOnException("auth",
@@ -244,8 +251,8 @@ public class BasicNetwork implements Network {
      * Reads the contents of HttpEntity into a byte[].
      */
     private byte[] entityToBytes(HttpEntity entity) throws IOException, ServerError {
-        PoolingByteArrayOutputStream bytes =
-                new PoolingByteArrayOutputStream(mPool, (int) entity.getContentLength());
+        long totalSize = entity.getContentLength();
+        PoolingByteArrayOutputStream bytes = new PoolingByteArrayOutputStream(mPool, (int) totalSize);
         byte[] buffer = null;
         try {
             InputStream in = entity.getContent();
@@ -254,8 +261,13 @@ public class BasicNetwork implements Network {
             }
             buffer = mPool.getBuf(1024);
             int count;
+            int transferredBytes = 0;
             while ((count = in.read(buffer)) != -1) {
                 bytes.write(buffer, 0, count);
+                transferredBytes += count;
+                if (mProgressListener != null) {
+                    mProgressListener.onProgress(transferredBytes, totalSize, SystemClock.elapsedRealtime() - mRequestStart);
+                }
             }
             return bytes.toByteArray();
         } finally {

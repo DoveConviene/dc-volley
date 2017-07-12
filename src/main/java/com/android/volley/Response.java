@@ -48,6 +48,15 @@ public class Response<T> {
         public void onErrorResponse(VolleyError error);
     }
 
+    /** Callback interface for delivering the progress of the responses. */
+    public interface ProgressListener {
+        /**
+         * Callback method thats called on each byte transfer.
+         */
+        public void onProgress(long transferredBytes, long totalSize, long millisSpent);
+
+    }
+
     /**
      * Returns a successful response containing the parsed result.
      *
