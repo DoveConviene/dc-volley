@@ -22,6 +22,7 @@ import android.os.Looper;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -60,6 +61,11 @@ public class ImageLoader {
      * The cache implementation to be used as an L1 cache before calling into volley.
      */
     private final ImageCache mCache;
+
+    /**
+     * The default retry policy to use for ImageRequests
+     */
+    private DefaultRetryPolicy mRetryPolicy;
 
     /**
      * HashMap of Cache keys -> BatchedImageRequest used to track in-flight requests so
@@ -326,8 +332,12 @@ public class ImageLoader {
                                                ScaleType scaleType, Listener<Bitmap> listener,
                                                ErrorListener errorListener,
                                                Response.ProgressListener progressListener) {
-        return new ImageRequest(requestUrl, listener, maxWidth, maxHeight, scaleType, Config.RGB_565,
+        ImageRequest imageRequest = new ImageRequest(requestUrl, listener, maxWidth, maxHeight, scaleType, Config.RGB_565,
                 errorListener, progressListener);
+        if(mRetryPolicy != null) {
+            imageRequest.setRetryPolicy(mRetryPolicy);
+        }
+        return imageRequest;
     }
 
     /**
@@ -538,6 +548,15 @@ public class ImageLoader {
             // Send the batched response
             batchResponse(cacheKey, request);
         }
+    }
+
+    /**
+     * Set custom retry policy for image request {@link ImageRequest}
+     *
+     * @param retryPolicy {@link DefaultRetryPolicy} Retry policy object
+     */
+    public void setDefaultRetryPolicy(DefaultRetryPolicy retryPolicy) {
+        mRetryPolicy = retryPolicy;
     }
 
     /**
