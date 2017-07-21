@@ -74,7 +74,7 @@ public class Response<T> {
          * Callback called each time byte chunks are downloaded
          *
          * @param progress   Progress from 0 to 100
-         * @param speed      Speed in Kilobytes/second
+         * @param speed      Speed in KBytes/second
          * @param retryCount Current request retries
          * @return true if should notify slow speed. false otherwise
          */
@@ -83,7 +83,7 @@ public class Response<T> {
         /**
          * Callback called when internet is considered slow
          *
-         * @param speed speed in kbps
+         * @param speed Speed in KBytes/second
          * @see #onProgressSpeed(int, float, int)
          */
         public void onProgressSlow(float speed);
