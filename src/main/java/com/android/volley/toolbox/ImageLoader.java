@@ -63,7 +63,7 @@ public class ImageLoader {
     private final ImageCache mCache;
 
     /**
-     * The default retry policy to use for ImageRequests
+     * The default retry policy to use for all ImageRequests
      */
     private DefaultRetryPolicy mRetryPolicy;
 

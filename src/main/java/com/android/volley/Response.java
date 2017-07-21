@@ -50,10 +50,42 @@ public class Response<T> {
 
     /** Callback interface for delivering the progress of the responses. */
     public interface ProgressListener {
+
         /**
-         * Callback method thats called on each byte transfer.
+         * Callback called each time byte chunks are downloaded
+         *
+         * @param transferredBytes Downloaded bytes
+         * @param totalSize Total response size
+         * @param millisSpent Current time spent on download
+         * @param retryCount Current request retries
          */
-        public void onProgress(long transferredBytes, long totalSize, long millisSpent);
+        public void onProgress(long transferredBytes, long totalSize, long millisSpent, int retryCount);
+
+    }
+
+    /**
+     * Listener for Progress and slow downloads
+     */
+    public interface ProgressSpeedListener extends ProgressListener {
+
+        /**
+         * Callback called each time byte chunks are downloaded
+         *
+         * @param progress Progress from 0 to 100
+         * @param speed Speed in Kilobytes/second
+         * @param retryCount Current request retries
+         * @return true if should notify slow speed. false otherwise
+         */
+        public boolean onProgressSpeed(int progress, float speed, int retryCount);
+
+        /**
+         * Callback called when internet is considered slow
+         *
+         * @param speed speed in kbps
+         *
+         * @see #onProgressSpeed(int, float, int)
+         */
+        public void onProgressSlow(float speed);
 
     }
 
