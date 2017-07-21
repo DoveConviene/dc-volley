@@ -72,15 +72,15 @@ public class ImageRequest extends Request<Bitmap> implements Response.ProgressSp
      * be fit in the rectangle of dimensions width x height while keeping its
      * aspect ratio.
      *
-     * @param url               URL of the image
-     * @param listener          Listener to receive the decoded bitmap
-     * @param maxWidth          Maximum width to decode this bitmap to, or zero for none
-     * @param maxHeight         Maximum height to decode this bitmap to, or zero for
-     *                          none
-     * @param scaleType         The ImageViews ScaleType used to calculate the needed image size.
-     * @param decodeConfig      Format to decode the bitmap to
-     * @param errorListener     Error listener, or null to ignore errors
-     * @param progressListener  The image progress listener
+     * @param url              URL of the image
+     * @param listener         Listener to receive the decoded bitmap
+     * @param maxWidth         Maximum width to decode this bitmap to, or zero for none
+     * @param maxHeight        Maximum height to decode this bitmap to, or zero for
+     *                         none
+     * @param scaleType        The ImageViews ScaleType used to calculate the needed image size.
+     * @param decodeConfig     Format to decode the bitmap to
+     * @param errorListener    Error listener, or null to ignore errors
+     * @param progressListener The image progress listener
      */
     public ImageRequest(String url, Response.Listener<Bitmap> listener, int maxWidth, int maxHeight,
                         ScaleType scaleType, Config decodeConfig, Response.ErrorListener errorListener,
@@ -100,14 +100,14 @@ public class ImageRequest extends Request<Bitmap> implements Response.ProgressSp
      * For API compatibility with the pre-ScaleType variant of the constructor. Equivalent to
      * the normal constructor with {@code ScaleType.CENTER_INSIDE}.
      *
-     * @param url               URL of the image
-     * @param listener          Listener to receive the decoded bitmap
-     * @param maxWidth          Maximum width to decode this bitmap to, or zero for none
-     * @param maxHeight         Maximum height to decode this bitmap to, or zero for
-     *                          none
-     * @param decodeConfig      Format to decode the bitmap to
-     * @param errorListener     Error listener, or null to ignore errors
-     * @param progressListener  The image progress listener
+     * @param url              URL of the image
+     * @param listener         Listener to receive the decoded bitmap
+     * @param maxWidth         Maximum width to decode this bitmap to, or zero for none
+     * @param maxHeight        Maximum height to decode this bitmap to, or zero for
+     *                         none
+     * @param decodeConfig     Format to decode the bitmap to
+     * @param errorListener    Error listener, or null to ignore errors
+     * @param progressListener The image progress listener
      */
     @Deprecated
     public ImageRequest(String url, Response.Listener<Bitmap> listener, int maxWidth, int maxHeight,
@@ -139,7 +139,7 @@ public class ImageRequest extends Request<Bitmap> implements Response.ProgressSp
 
     /**
      * The real guts of parseNetworkResponse. Broken out for readability.
-     *
+     * <p>
      * This version is for reading a Bitmap from file
      */
     private Response<Bitmap> doFileParse() {
@@ -183,14 +183,14 @@ public class ImageRequest extends Request<Bitmap> implements Response.ProgressSp
 
     @Override
     public void onProgress(long transferredBytes, long totalSize, long millisSpent, int retryCount) {
-        if(mProgressListener != null) {
+        if (mProgressListener != null) {
             mProgressListener.onProgress(transferredBytes, totalSize, millisSpent, retryCount);
         }
     }
 
     @Override
     public boolean onProgressSpeed(int progress, float speed, int retryCount) {
-        if(mProgressListener != null && mProgressListener instanceof Response.ProgressSpeedListener) {
+        if (mProgressListener != null && mProgressListener instanceof Response.ProgressSpeedListener) {
             return ((Response.ProgressSpeedListener) mProgressListener).onProgressSpeed(progress, speed, retryCount);
         }
         return false;
@@ -198,7 +198,7 @@ public class ImageRequest extends Request<Bitmap> implements Response.ProgressSp
 
     @Override
     public void onProgressSlow(float speed) {
-        if(mProgressListener != null && mProgressListener instanceof Response.ProgressSpeedListener) {
+        if (mProgressListener != null && mProgressListener instanceof Response.ProgressSpeedListener) {
             ((Response.ProgressSpeedListener) mProgressListener).onProgressSlow(speed);
         }
     }

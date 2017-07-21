@@ -334,7 +334,7 @@ public class ImageLoader {
                                                Response.ProgressListener progressListener) {
         ImageRequest imageRequest = new ImageRequest(requestUrl, listener, maxWidth, maxHeight, scaleType, Config.RGB_565,
                 errorListener, progressListener);
-        if(mRetryPolicy != null) {
+        if (mRetryPolicy != null) {
             imageRequest.setRetryPolicy(mRetryPolicy);
         }
         return imageRequest;
@@ -342,7 +342,7 @@ public class ImageLoader {
 
     /**
      * Returns an ImageContainer for the requested URL.
-     *
+     * <p>
      * The ImageContainer will contain either the specified default bitmap or the loaded bitmap.
      * If the default was returned, the {@link ImageLoader} will be invoked when the
      * request is fulfilled.
@@ -359,9 +359,9 @@ public class ImageLoader {
     /**
      * Returns an ImageContainer for the requested URL.
      *
-     * @param requestUrl        The URL of the image to be loaded.
-     * @param listener          The image listener
-     * @param progressListener  The image progress listener
+     * @param requestUrl       The URL of the image to be loaded.
+     * @param listener         The image listener
+     * @param progressListener The image progress listener
      * @return A container object that contains all of the properties of the request, as well as
      * the currently available image (default if remote is not loaded).
      */
@@ -388,11 +388,11 @@ public class ImageLoader {
     /**
      * Returns an ImageContainer for the requested URL.
      *
-     * @param requestUrl    The URL of the image to be loaded.
-     * @param imageListener The image listener
-     * @param progressListener  The image progress listener
-     * @param maxWidth      The maximum width of the returned image.
-     * @param maxHeight     The maximum height of the returned image.
+     * @param requestUrl       The URL of the image to be loaded.
+     * @param imageListener    The image listener
+     * @param progressListener The image progress listener
+     * @param maxWidth         The maximum width of the returned image.
+     * @param maxHeight        The maximum height of the returned image.
      * @return A container object that contains all of the properties of the request, as well as
      * the currently available image (default if remote is not loaded).
      */
@@ -427,12 +427,12 @@ public class ImageLoader {
      * relating to the request (as well as the default image if the requested
      * image is not available).
      *
-     * @param requestUrl    The url of the remote image
-     * @param imageListener The listener to call when the remote image is loaded
-     * @param progressListener  The image progress listener
-     * @param maxWidth      The maximum width of the returned image.
-     * @param maxHeight     The maximum height of the returned image.
-     * @param scaleType     The ImageViews ScaleType used to calculate the needed image size.
+     * @param requestUrl       The url of the remote image
+     * @param imageListener    The listener to call when the remote image is loaded
+     * @param progressListener The image progress listener
+     * @param maxWidth         The maximum width of the returned image.
+     * @param maxHeight        The maximum height of the returned image.
+     * @param scaleType        The ImageViews ScaleType used to calculate the needed image size.
      * @return A container object that contains all of the properties of the request, as well as
      * the currently available image (default if remote is not loaded).
      */

@@ -48,16 +48,18 @@ public class Response<T> {
         public void onErrorResponse(VolleyError error);
     }
 
-    /** Callback interface for delivering the progress of the responses. */
+    /**
+     * Callback interface for delivering the progress of the responses.
+     */
     public interface ProgressListener {
 
         /**
          * Callback called each time byte chunks are downloaded
          *
          * @param transferredBytes Downloaded bytes
-         * @param totalSize Total response size
-         * @param millisSpent Current time spent on download
-         * @param retryCount Current request retries
+         * @param totalSize        Total response size
+         * @param millisSpent      Current time spent on download
+         * @param retryCount       Current request retries
          */
         public void onProgress(long transferredBytes, long totalSize, long millisSpent, int retryCount);
 
@@ -71,8 +73,8 @@ public class Response<T> {
         /**
          * Callback called each time byte chunks are downloaded
          *
-         * @param progress Progress from 0 to 100
-         * @param speed Speed in Kilobytes/second
+         * @param progress   Progress from 0 to 100
+         * @param speed      Speed in Kilobytes/second
          * @param retryCount Current request retries
          * @return true if should notify slow speed. false otherwise
          */
@@ -82,7 +84,6 @@ public class Response<T> {
          * Callback called when internet is considered slow
          *
          * @param speed speed in kbps
-         *
          * @see #onProgressSpeed(int, float, int)
          */
         public void onProgressSlow(float speed);

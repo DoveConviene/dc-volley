@@ -281,7 +281,7 @@ public class BasicNetwork implements Network {
              * Response.ProgressListener [base] or Response.ProgressSpeedListener
              * ImageRequest is extending ProgressListener from default
              */
-            if(request instanceof ProgressListener) {
+            if (request instanceof ProgressListener) {
                 progressListener = (ProgressListener) request;
             }
             while ((count = in.read(buffer)) != -1) {
@@ -298,10 +298,10 @@ public class BasicNetwork implements Network {
                      * If progressListener is type Response.ProgressSpeedListener then
                      * calculate speed and progress and check also for slow connection
                      */
-                    if(progressListener instanceof Response.ProgressSpeedListener) {
-                        progress = ((int)(100 * transferredBytes / totalSize));
-                        speed = ((float) transferredBytes/1024) / ((float) getRequestLifetime(mDownloadStart)/1000);
-                        if(((Response.ProgressSpeedListener) progressListener).onProgressSpeed(progress, speed, retryCount)
+                    if (progressListener instanceof Response.ProgressSpeedListener) {
+                        progress = ((int) (100 * transferredBytes / totalSize));
+                        speed = ((float) transferredBytes / 1024) / ((float) getRequestLifetime(mDownloadStart) / 1000);
+                        if (((Response.ProgressSpeedListener) progressListener).onProgressSpeed(progress, speed, retryCount)
                                 && !slowSpeedNotified
                                 && getRequestLifetime(mDownloadStart) > SLOW_REQUEST_CHECK_MS) {
                             ((Response.ProgressSpeedListener) progressListener).onProgressSlow(speed);
