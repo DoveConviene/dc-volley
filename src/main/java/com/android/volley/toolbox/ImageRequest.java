@@ -44,7 +44,7 @@ public class ImageRequest extends Request<Bitmap> implements Response.ProgressSp
     /**
      * Default number of retries for image requests
      */
-    private static final int IMAGE_MAX_RETRIES = 1;
+    private static final int IMAGE_MAX_RETRIES = 2;
 
     /**
      * Default backoff multiplier for image requests
