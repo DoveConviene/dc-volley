@@ -65,7 +65,7 @@ public class ImageLoader {
     /**
      * The default retry policy to use for all ImageRequests
      */
-    private DefaultRetryPolicy mRetryPolicy;
+    private DefaultRetryPolicy mDefaultRetryPolicy;
 
     /**
      * HashMap of Cache keys -> BatchedImageRequest used to track in-flight requests so
@@ -113,12 +113,37 @@ public class ImageLoader {
     }
 
     /**
+     * Constructs a new ImageLoader.
+     *
+     * @param queue      The RequestQueue to use for making image requests.
+     * @param imageCache The cache to use as an L1 cache.
+     * @param retryPolicy DefaultRetryPolicy used for all image requests
+     */
+    public ImageLoader(RequestQueue queue, ImageCache imageCache, DefaultRetryPolicy retryPolicy) {
+        mRequestQueue = queue;
+        mDefaultRetryPolicy = retryPolicy;
+        mCache = imageCache;
+    }
+
+    /**
      * Constructs a new ImageLoader with {@link BitmapLruCache} BitmapLruCache as L1 cache.
      *
      * @param queue The RequestQueue to use for making image requests.
      */
     public ImageLoader(RequestQueue queue) {
         mRequestQueue = queue;
+        mCache = new BitmapLruCache();
+    }
+
+    /**
+     * Constructs a new ImageLoader with {@link BitmapLruCache} BitmapLruCache as L1 cache.
+     *
+     * @param queue The RequestQueue to use for making image requests.
+     * @param retryPolicy DefaultRetryPolicy used for all image requests
+     */
+    public ImageLoader(RequestQueue queue, DefaultRetryPolicy retryPolicy) {
+        mRequestQueue = queue;
+        mDefaultRetryPolicy = retryPolicy;
         mCache = new BitmapLruCache();
     }
 
@@ -334,8 +359,8 @@ public class ImageLoader {
                                                Response.ProgressListener progressListener) {
         ImageRequest imageRequest = new ImageRequest(requestUrl, listener, maxWidth, maxHeight, scaleType, Config.RGB_565,
                 errorListener, progressListener);
-        if (mRetryPolicy != null) {
-            imageRequest.setRetryPolicy(mRetryPolicy);
+        if (mDefaultRetryPolicy != null) {
+            imageRequest.setRetryPolicy(mDefaultRetryPolicy);
         }
         return imageRequest;
     }
@@ -548,15 +573,6 @@ public class ImageLoader {
             // Send the batched response
             batchResponse(cacheKey, request);
         }
-    }
-
-    /**
-     * Set custom retry policy for image request {@link ImageRequest}
-     *
-     * @param retryPolicy {@link DefaultRetryPolicy} Retry policy object
-     */
-    public void setDefaultRetryPolicy(DefaultRetryPolicy retryPolicy) {
-        mRetryPolicy = retryPolicy;
     }
 
     /**
