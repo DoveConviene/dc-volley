@@ -182,9 +182,9 @@ public class ImageRequest extends Request<Bitmap> implements Response.ProgressSp
     }
 
     @Override
-    public void onProgress(long transferredBytes, long totalSize, long millisSpent, int retryCount) {
+    public void onProgress(int progress, long transferredBytes, long totalSize, long millisSpent, int retryCount) {
         if (mProgressListener != null) {
-            mProgressListener.onProgress(transferredBytes, totalSize, millisSpent, retryCount);
+            mProgressListener.onProgress(progress, transferredBytes, totalSize, millisSpent, retryCount);
         }
     }
 

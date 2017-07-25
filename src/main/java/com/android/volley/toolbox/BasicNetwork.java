@@ -292,14 +292,14 @@ public class BasicNetwork implements Network {
                  * need the progress info
                  */
                 if (progressListener != null) {
+                    progress = ((int) (100 * transferredBytes / totalSize));
                     retryCount = request.getRetryPolicy().getCurrentRetryCount();
-                    progressListener.onProgress(transferredBytes, totalSize, getRequestLifetime(mDownloadStart), retryCount);
+                    progressListener.onProgress(progress, transferredBytes, totalSize, getRequestLifetime(mDownloadStart), retryCount);
                     /*
                      * If progressListener is type Response.ProgressSpeedListener then
                      * calculate speed and progress and check also for slow connection
                      */
                     if (progressListener instanceof Response.ProgressSpeedListener) {
-                        progress = ((int) (100 * transferredBytes / totalSize));
                         speed = ((float) transferredBytes / 1024) / ((float) getRequestLifetime(mDownloadStart) / 1000);
                         if (((Response.ProgressSpeedListener) progressListener).onProgressSpeed(progress, speed, retryCount)
                                 && !slowSpeedNotified

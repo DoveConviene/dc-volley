@@ -56,12 +56,13 @@ public class Response<T> {
         /**
          * Callback called each time byte chunks are downloaded
          *
+         * @param progress         Progress percentage from 0 to 100
          * @param transferredBytes Downloaded bytes
          * @param totalSize        Total response size
          * @param millisSpent      Current time spent on download
          * @param retryCount       Current request retries
          */
-        public void onProgress(long transferredBytes, long totalSize, long millisSpent, int retryCount);
+        public void onProgress(int progress, long transferredBytes, long totalSize, long millisSpent, int retryCount);
 
     }
 
@@ -73,8 +74,8 @@ public class Response<T> {
         /**
          * Callback called each time byte chunks are downloaded
          *
-         * @param progress   Progress from 0 to 100
-         * @param speed      Speed in KBytes/second
+         * @param progress   Progress percentage from 0 to 100
+         * @param speed      Speed in Kbps (Kilobit/second)
          * @param retryCount Current request retries
          * @return true if should notify slow speed. false otherwise
          */
