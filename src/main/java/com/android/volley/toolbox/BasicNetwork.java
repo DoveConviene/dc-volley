@@ -65,11 +65,6 @@ public class BasicNetwork implements Network {
      */
     private static final int SLOW_REQUEST_THRESHOLD_MS = 3000;
 
-    /*
-     * is the time to wait before internet quality check
-     */
-    private static final int SLOW_REQUEST_CHECK_MS = 3000;
-
     private static final int DEFAULT_POOL_SIZE = 4096;
 
     protected final HttpStack mHttpStack;
@@ -268,17 +263,13 @@ public class BasicNetwork implements Network {
                 throw new ServerError();
             }
             buffer = mPool.getBuf(1024);
-            boolean slowSpeedNotified = false;
             int count;
-            int progress;
-            int retryCount;
-            float speed;
             int transferredBytes = 0;
             ProgressListener progressListener = null;
             /*
              * Get Progress Listener from request.
              * To implement ProgressListener you have to extend the Request<T> to
-             * Response.ProgressListener [base] or Response.ProgressSpeedListener
+             * Response.ProgressListener
              * ImageRequest is extending ProgressListener from default
              */
             if (request instanceof ProgressListener) {
@@ -292,25 +283,12 @@ public class BasicNetwork implements Network {
                  * need the progress info
                  */
                 if (progressListener != null) {
-                    progress = ((int) (100 * transferredBytes / totalSize));
-                    retryCount = request.getRetryPolicy().getCurrentRetryCount();
-                    progressListener.onProgress(progress, transferredBytes, totalSize, getTimeElapsed(downloadStart), retryCount);
-                    /*
-                     * If progressListener is type Response.ProgressSpeedListener then
-                     * calculate speed and progress and check also for slow connection
-                     */
-                    if (progressListener instanceof Response.ProgressSpeedListener) {
-                        speed = ((float) transferredBytes / 1024) / ((float) getTimeElapsed(downloadStart) / 1000);
-                        if (((Response.ProgressSpeedListener) progressListener).onProgressSpeed(progress, speed, retryCount)
-                                && !slowSpeedNotified
-                                && getTimeElapsed(downloadStart) > SLOW_REQUEST_CHECK_MS) {
-                            ((Response.ProgressSpeedListener) progressListener).onProgressSlow(speed);
-                            /*
-                             * Only notify once for download process
-                             */
-                            slowSpeedNotified = true;
-                        }
-                    }
+                    progressListener.onProgress(
+                            ((int) (100 * transferredBytes / totalSize)),
+                            transferredBytes,
+                            totalSize,
+                            getTimeElapsed(downloadStart),
+                            request.getRetryPolicy().getCurrentRetryCount());
                 }
             }
             return bytes.toByteArray();

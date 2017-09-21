@@ -67,31 +67,6 @@ public class Response<T> {
     }
 
     /**
-     * Listener for Progress and slow downloads
-     */
-    public interface ProgressSpeedListener extends ProgressListener {
-
-        /**
-         * Callback called each time byte chunks are downloaded
-         *
-         * @param progress   Progress percentage from 0 to 100
-         * @param speed      Speed in Kbps (Kilobit/second)
-         * @param retryCount Current request retries
-         * @return true if should notify slow speed. false otherwise
-         */
-        public boolean onProgressSpeed(int progress, float speed, int retryCount);
-
-        /**
-         * Callback called when internet is considered slow
-         *
-         * @param speed Speed in KBytes/second
-         * @see #onProgressSpeed(int, float, int)
-         */
-        public void onProgressSlow(float speed);
-
-    }
-
-    /**
      * Returns a successful response containing the parsed result.
      *
      * @param result     A result of the expected type

@@ -35,7 +35,7 @@ import java.io.FileNotFoundException;
  * A canned request for getting an image at a given URL and calling
  * back with a decoded Bitmap.
  */
-public class ImageRequest extends Request<Bitmap> implements Response.ProgressSpeedListener {
+public class ImageRequest extends Request<Bitmap> implements Response.ProgressListener {
     /**
      * Socket timeout in milliseconds for image requests
      */
@@ -185,21 +185,6 @@ public class ImageRequest extends Request<Bitmap> implements Response.ProgressSp
     public void onProgress(int progress, long transferredBytes, long totalSize, long millisSpent, int retryCount) {
         if (mProgressListener != null) {
             mProgressListener.onProgress(progress, transferredBytes, totalSize, millisSpent, retryCount);
-        }
-    }
-
-    @Override
-    public boolean onProgressSpeed(int progress, float speed, int retryCount) {
-        if (mProgressListener != null && mProgressListener instanceof Response.ProgressSpeedListener) {
-            return ((Response.ProgressSpeedListener) mProgressListener).onProgressSpeed(progress, speed, retryCount);
-        }
-        return false;
-    }
-
-    @Override
-    public void onProgressSlow(float speed) {
-        if (mProgressListener != null && mProgressListener instanceof Response.ProgressSpeedListener) {
-            ((Response.ProgressSpeedListener) mProgressListener).onProgressSlow(speed);
         }
     }
 }
