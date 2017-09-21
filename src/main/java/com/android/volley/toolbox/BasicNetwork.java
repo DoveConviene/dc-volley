@@ -91,7 +91,7 @@ public class BasicNetwork implements Network {
 
     @Override
     public NetworkResponse performRequest(Request<?> request) throws VolleyError {
-        long mRequestStart = SystemClock.elapsedRealtime();
+        long requestStart = SystemClock.elapsedRealtime();
         while (true) {
             HttpResponse httpResponse = null;
             byte[] responseContents = null;
@@ -112,7 +112,7 @@ public class BasicNetwork implements Network {
                     if (entry == null) {
                         return new NetworkResponse(HttpStatus.SC_NOT_MODIFIED, null,
                                 responseHeaders, true,
-                                getTimeElapsed(mRequestStart));
+                                getTimeElapsed(requestStart));
                     }
 
                     // A HTTP 304 response does not have all header fields. We
@@ -122,7 +122,7 @@ public class BasicNetwork implements Network {
                     entry.responseHeaders.putAll(responseHeaders);
                     return new NetworkResponse(HttpStatus.SC_NOT_MODIFIED, entry.data,
                             entry.responseHeaders, true,
-                            getTimeElapsed(mRequestStart));
+                            getTimeElapsed(requestStart));
                 }
 
                 // Handle moved resources
@@ -141,14 +141,14 @@ public class BasicNetwork implements Network {
                 }
 
                 // if the request is slow, log it.
-                long requestLifetime = getTimeElapsed(mRequestStart);
+                long requestLifetime = getTimeElapsed(requestStart);
                 logSlowRequests(requestLifetime, request, responseContents, statusLine);
 
                 if (statusCode < 200 || statusCode > 299) {
                     throw new IOException();
                 }
                 return new NetworkResponse(statusCode, responseContents, responseHeaders, false,
-                        getTimeElapsed(mRequestStart));
+                        getTimeElapsed(requestStart));
             } catch (SocketTimeoutException e) {
                 attemptRetryOnException("socket", request, new TimeoutError());
             } catch (ConnectTimeoutException e) {
@@ -171,7 +171,7 @@ public class BasicNetwork implements Network {
                 }
                 if (responseContents != null) {
                     networkResponse = new NetworkResponse(statusCode, responseContents,
-                            responseHeaders, false, getTimeElapsed(mRequestStart));
+                            responseHeaders, false, getTimeElapsed(requestStart));
                     if (statusCode == HttpStatus.SC_UNAUTHORIZED ||
                             statusCode == HttpStatus.SC_FORBIDDEN) {
                         attemptRetryOnException("auth",
