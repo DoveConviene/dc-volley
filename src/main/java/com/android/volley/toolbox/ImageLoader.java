@@ -63,11 +63,6 @@ public class ImageLoader {
     private final ImageCache mCache;
 
     /**
-     * The default retry policy to use for all ImageRequests
-     */
-    private DefaultRetryPolicy mDefaultRetryPolicy;
-
-    /**
      * HashMap of Cache keys -> BatchedImageRequest used to track in-flight requests so
      * that we can coalesce multiple requests to the same URL into a single network request.
      */
@@ -113,37 +108,12 @@ public class ImageLoader {
     }
 
     /**
-     * Constructs a new ImageLoader.
-     *
-     * @param queue      The RequestQueue to use for making image requests.
-     * @param imageCache The cache to use as an L1 cache.
-     * @param retryPolicy DefaultRetryPolicy used for all image requests
-     */
-    public ImageLoader(RequestQueue queue, ImageCache imageCache, DefaultRetryPolicy retryPolicy) {
-        mRequestQueue = queue;
-        mDefaultRetryPolicy = retryPolicy;
-        mCache = imageCache;
-    }
-
-    /**
      * Constructs a new ImageLoader with {@link BitmapLruCache} BitmapLruCache as L1 cache.
      *
      * @param queue The RequestQueue to use for making image requests.
      */
     public ImageLoader(RequestQueue queue) {
         mRequestQueue = queue;
-        mCache = new BitmapLruCache();
-    }
-
-    /**
-     * Constructs a new ImageLoader with {@link BitmapLruCache} BitmapLruCache as L1 cache.
-     *
-     * @param queue The RequestQueue to use for making image requests.
-     * @param retryPolicy DefaultRetryPolicy used for all image requests
-     */
-    public ImageLoader(RequestQueue queue, DefaultRetryPolicy retryPolicy) {
-        mRequestQueue = queue;
-        mDefaultRetryPolicy = retryPolicy;
         mCache = new BitmapLruCache();
     }
 
@@ -359,9 +329,6 @@ public class ImageLoader {
                                                Response.ProgressListener progressListener) {
         ImageRequest imageRequest = new ImageRequest(requestUrl, listener, maxWidth, maxHeight, scaleType, Config.RGB_565,
                 errorListener, progressListener);
-        if (mDefaultRetryPolicy != null) {
-            imageRequest.setRetryPolicy(mDefaultRetryPolicy);
-        }
         return imageRequest;
     }
 

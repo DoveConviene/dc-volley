@@ -117,7 +117,7 @@ public class BasicNetwork implements Network {
                     if (entry == null) {
                         return new NetworkResponse(HttpStatus.SC_NOT_MODIFIED, null,
                                 responseHeaders, true,
-                                getRequestLifetime(mRequestStart));
+                                getTimeElapsed(mRequestStart));
                     }
 
                     // A HTTP 304 response does not have all header fields. We
@@ -127,7 +127,7 @@ public class BasicNetwork implements Network {
                     entry.responseHeaders.putAll(responseHeaders);
                     return new NetworkResponse(HttpStatus.SC_NOT_MODIFIED, entry.data,
                             entry.responseHeaders, true,
-                            getRequestLifetime(mRequestStart));
+                            getTimeElapsed(mRequestStart));
                 }
 
                 // Handle moved resources
@@ -146,14 +146,14 @@ public class BasicNetwork implements Network {
                 }
 
                 // if the request is slow, log it.
-                long requestLifetime = getRequestLifetime(mRequestStart);
+                long requestLifetime = getTimeElapsed(mRequestStart);
                 logSlowRequests(requestLifetime, request, responseContents, statusLine);
 
                 if (statusCode < 200 || statusCode > 299) {
                     throw new IOException();
                 }
                 return new NetworkResponse(statusCode, responseContents, responseHeaders, false,
-                        getRequestLifetime(mRequestStart));
+                        getTimeElapsed(mRequestStart));
             } catch (SocketTimeoutException e) {
                 attemptRetryOnException("socket", request, new TimeoutError());
             } catch (ConnectTimeoutException e) {
@@ -176,7 +176,7 @@ public class BasicNetwork implements Network {
                 }
                 if (responseContents != null) {
                     networkResponse = new NetworkResponse(statusCode, responseContents,
-                            responseHeaders, false, getRequestLifetime(mRequestStart));
+                            responseHeaders, false, getTimeElapsed(mRequestStart));
                     if (statusCode == HttpStatus.SC_UNAUTHORIZED ||
                             statusCode == HttpStatus.SC_FORBIDDEN) {
                         attemptRetryOnException("auth",
@@ -230,7 +230,7 @@ public class BasicNetwork implements Network {
         request.addMarker(String.format("%s-retry [timeout=%s]", logPrefix, oldTimeout));
     }
 
-    private long getRequestLifetime(long startTime) {
+    private long getTimeElapsed(long startTime) {
         return SystemClock.elapsedRealtime() - startTime;
     }
 
@@ -251,14 +251,14 @@ public class BasicNetwork implements Network {
     }
 
     protected void logError(String what, String url, long start) {
-        VolleyLog.v("HTTP ERROR(%s) %d ms to fetch %s", what, getRequestLifetime(start), url);
+        VolleyLog.v("HTTP ERROR(%s) %d ms to fetch %s", what, getTimeElapsed(start), url);
     }
 
     /**
      * Reads the contents of HttpEntity into a byte[].
      */
     private byte[] entityToBytes(Request<?> request, HttpEntity entity) throws IOException, ServerError {
-        long mDownloadStart = SystemClock.elapsedRealtime();
+        long downloadStart = SystemClock.elapsedRealtime();
         long totalSize = entity.getContentLength();
         PoolingByteArrayOutputStream bytes = new PoolingByteArrayOutputStream(mPool, (int) totalSize);
         byte[] buffer = null;
@@ -294,16 +294,16 @@ public class BasicNetwork implements Network {
                 if (progressListener != null) {
                     progress = ((int) (100 * transferredBytes / totalSize));
                     retryCount = request.getRetryPolicy().getCurrentRetryCount();
-                    progressListener.onProgress(progress, transferredBytes, totalSize, getRequestLifetime(mDownloadStart), retryCount);
+                    progressListener.onProgress(progress, transferredBytes, totalSize, getTimeElapsed(downloadStart), retryCount);
                     /*
                      * If progressListener is type Response.ProgressSpeedListener then
                      * calculate speed and progress and check also for slow connection
                      */
                     if (progressListener instanceof Response.ProgressSpeedListener) {
-                        speed = ((float) transferredBytes / 1024) / ((float) getRequestLifetime(mDownloadStart) / 1000);
+                        speed = ((float) transferredBytes / 1024) / ((float) getTimeElapsed(downloadStart) / 1000);
                         if (((Response.ProgressSpeedListener) progressListener).onProgressSpeed(progress, speed, retryCount)
                                 && !slowSpeedNotified
-                                && getRequestLifetime(mDownloadStart) > SLOW_REQUEST_CHECK_MS) {
+                                && getTimeElapsed(downloadStart) > SLOW_REQUEST_CHECK_MS) {
                             ((Response.ProgressSpeedListener) progressListener).onProgressSlow(speed);
                             /*
                              * Only notify once for download process
