@@ -27,13 +27,12 @@ import com.android.volley.NetworkResponse;
 import com.android.volley.NoConnectionError;
 import com.android.volley.RedirectError;
 import com.android.volley.Request;
-import com.android.volley.Response;
+import com.android.volley.Response.ProgressListener;
 import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.VolleyLog;
-import com.android.volley.Response.ProgressListener;
 
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
