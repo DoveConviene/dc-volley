@@ -97,6 +97,29 @@ public class ImageRequest extends Request<Bitmap> implements Response.ProgressLi
     }
 
     /**
+     * Creates a new image request, decoding to a maximum specified width and
+     * height. If both width and height are zero, the image will be decoded to
+     * its natural size. If one of the two is nonzero, that dimension will be
+     * clamped and the other one will be set to preserve the image's aspect
+     * ratio. If both width and height are nonzero, the image will be decoded to
+     * be fit in the rectangle of dimensions width x height while keeping its
+     * aspect ratio.
+     *
+     * @param url              URL of the image
+     * @param listener         Listener to receive the decoded bitmap
+     * @param maxWidth         Maximum width to decode this bitmap to, or zero for none
+     * @param maxHeight        Maximum height to decode this bitmap to, or zero for
+     *                         none
+     * @param scaleType        The ImageViews ScaleType used to calculate the needed image size.
+     * @param decodeConfig     Format to decode the bitmap to
+     * @param errorListener    Error listener, or null to ignore errors
+     */
+    public ImageRequest(String url, Response.Listener<Bitmap> listener, int maxWidth, int maxHeight,
+                        ScaleType scaleType, Config decodeConfig, Response.ErrorListener errorListener) {
+        this(url, listener, maxWidth, maxHeight, scaleType, decodeConfig, errorListener, null);
+    }
+
+    /**
      * For API compatibility with the pre-ScaleType variant of the constructor. Equivalent to
      * the normal constructor with {@code ScaleType.CENTER_INSIDE}.
      *
